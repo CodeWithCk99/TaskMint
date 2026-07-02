@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     xmlns:tools="http://schemas.android.com/tools"
+     android:layout_height="match_parent"
+     android:layout_width="match_parent"
+     android:background="@color/background"
+     tools:context=".MainActivity">
+
+    <LinearLayout
+         android:layout_height="wrap_content"
+         android:layout_width="0dp"
+         app:layout_constraintTop_toTopOf="parent"
+         android:padding="24dp"
+         android:orientation="vertical"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintEnd_toEndOf="parent"
+         android:id="@+id/headerLayout">
+
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             android:textSize="16sp"
+             android:textColor="@color/text_secondary"
+             android:id="@+id/tvGreeting"
+             android:text="👋 Good Morning" />
+
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             android:textSize="28sp"
+             android:textColor="@color/text_primary"
+             android:id="@+id/tvTitle"
+             android:text="TaskMint"
+             android:textStyle="bold" />
+
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             android:textColor="@color/text_secondary"
+             android:id="@+id/tvDate"
+             android:text="Today" />
+
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+         android:layout_height="wrap_content"
+         android:layout_width="0dp"
+         android:hint="Search Tasks"
+         android:layout_marginHorizontal="24dp"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintEnd_toEndOf="parent"
+         android:layout_marginTop="12dp"
+         app:layout_constraintTop_toBottomOf="@id/headerLayout"
+         android:id="@+id/searchLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+             android:layout_height="wrap_content"
+             android:layout_width="match_parent"
+             android:id="@+id/etSearch" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+         android:layout_height="0dp"
+         android:layout_width="0dp"
+         app:layout_constraintStart_toStartOf="parent"
+         android:paddingBottom="90dp"
+         tools:listitem="@layout/task_item"
+         app:layout_constraintEnd_toEndOf="parent"
+         android:layout_marginTop="16dp"
+         app:layout_constraintBottom_toBottomOf="parent"
+         app:layout_constraintTop_toBottomOf="@id/searchLayout"
+         android:id="@+id/recyclerTasks" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+         android:layout_height="wrap_content"
+         android:layout_width="wrap_content"
+         android:src="@android:drawable/ic_input_add"
+         app:backgroundTint="@color/primary"
+         android:layout_margin="20dp"
+         app:tint="@android:color/white"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintBottom_toBottomOf="parent"
+         android:id="@+id/fabAdd" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

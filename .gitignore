@@ -1,0 +1,19 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Local configuration
+local.properties
+
+# IDE files
+.idea/
+.acside/
+*.iml
+
+# Log files
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
