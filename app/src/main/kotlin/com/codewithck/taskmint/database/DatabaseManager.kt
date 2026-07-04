@@ -34,4 +34,73 @@ class DatabaseManager(context: Context) {
 
         return result
     }
+
+    fun getAllTasks(): MutableList<Task> {
+
+        val taskList = mutableListOf<Task>()
+
+        val db = dbHelper.readableDatabase
+
+        val cursor = db.query(
+            DatabaseContract.TaskTable.TABLE_NAME,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "${DatabaseContract.TaskTable.COLUMN_ID} DESC"
+        )
+
+        if (cursor.moveToFirst()) {
+
+            do {
+
+                val task = Task(
+                    id = cursor.getLong(
+                        cursor.getColumnIndexOrThrow(
+                            DatabaseContract.TaskTable.COLUMN_ID
+                        )
+                    ),
+                    title = cursor.getString(
+                        cursor.getColumnIndexOrThrow(
+                            DatabaseContract.TaskTable.COLUMN_TITLE
+                        )
+                    ),
+                    description = cursor.getString(
+                        cursor.getColumnIndexOrThrow(
+                            DatabaseContract.TaskTable.COLUMN_DESCRIPTION
+                        )
+                    ) ?: "",
+                    priority = cursor.getString(
+                        cursor.getColumnIndexOrThrow(
+                            DatabaseContract.TaskTable.COLUMN_PRIORITY
+                        )
+                    ) ?: "Medium",
+                    category = cursor.getString(
+                        cursor.getColumnIndexOrThrow(
+                            DatabaseContract.TaskTable.COLUMN_CATEGORY
+                        )
+                    ) ?: "Personal",
+                    dueDate = cursor.getLong(
+                        cursor.getColumnIndexOrThrow(
+                            DatabaseContract.TaskTable.COLUMN_DUE_DATE
+                        )
+                    ),
+                    isCompleted = cursor.getInt(
+                        cursor.getColumnIndexOrThrow(
+                            DatabaseContract.TaskTable.COLUMN_COMPLETED
+                        )
+                    ) == 1
+                )
+
+                taskList.add(task)
+
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+
+        return taskList
+    }
 }
