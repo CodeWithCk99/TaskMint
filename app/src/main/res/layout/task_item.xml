@@ -5,70 +5,51 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
-    app:cardBackgroundColor="@color/surface">
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="3dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <CheckBox
+            android:id="@+id/checkCompleted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <CheckBox
-                android:id="@+id/cbTask"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvTaskTitle"
-                android:layout_width="0dp"
+                android:id="@+id/txtTitle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Learn Kotlin"
-                android:textColor="@color/text_primary"
+                android:text="Task Title"
                 android:textSize="18sp"
-                android:textStyle="bold"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+                android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tvDueDate"
+                android:id="@+id/txtDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="📅 Today"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp"/>
+                android:layout_marginTop="4dp"
+                android:text="Task Description"
+                android:textSize="14sp" />
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-
-            <TextView
-                android:id="@+id/tvPriority"
+                android:id="@+id/txtPriority"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="HIGH"
-                android:textAllCaps="true"
-                android:textColor="@color/danger"
-                android:textSize="12sp"
-                android:textStyle="bold"/>
+                android:layout_marginTop="4dp"
+                android:text="Medium"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

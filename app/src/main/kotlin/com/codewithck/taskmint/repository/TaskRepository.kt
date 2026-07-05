@@ -15,4 +15,12 @@ class TaskRepository(context: Context) {
     fun getAllTasks(): MutableList<Task> {
         return databaseManager.getAllTasks()
     }
+
+    fun updateTask(task: Task): Int {
+        return databaseManager.updateTask(task)
+    }
+
+    fun deleteTask(id: Long): Int {
+        return databaseManager.deleteTask(id)
+    }
 }
