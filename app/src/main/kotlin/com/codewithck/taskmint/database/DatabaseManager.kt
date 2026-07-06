@@ -40,13 +40,13 @@ class DatabaseManager(context: Context) {
         val db = dbHelper.readableDatabase
 
         val cursor = db.query(
-            DatabaseContract.TaskTable.TABLE_NAME,
-            null,
-            null,
-            null,
-            null,
-            null,
-            "${DatabaseContract.TaskTable.COLUMN_ID} DESC"
+    DatabaseContract.TaskTable.TABLE_NAME,
+    null,
+    null,
+    null,
+    null,
+    null,
+    "${DatabaseContract.TaskTable.COLUMN_COMPLETED} ASC, ${DatabaseContract.TaskTable.COLUMN_ID} DESC" 
         )
 
         if (cursor.moveToFirst()) {

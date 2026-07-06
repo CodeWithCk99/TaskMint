@@ -1,5 +1,6 @@
 package com.codewithck.taskmint
 
+import android.widget.Toast
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -33,7 +34,21 @@ class MainActivity : AppCompatActivity(),
 
         repository = TaskRepository(this)
 
-        adapter = TaskAdapter(taskList)
+        adapter = TaskAdapter(taskList) { task ->
+
+    val result = repository.updateTask(task)
+
+    if (result > 0) {
+        // Database updated successfully
+    } else {
+        Toast.makeText(
+            this,
+            "Failed to update task",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+}
 
         rvTasks.layoutManager = LinearLayoutManager(this)
         rvTasks.adapter = adapter
