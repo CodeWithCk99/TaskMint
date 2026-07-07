@@ -13,7 +13,8 @@ import com.codewithck.taskmint.model.Task
 class TaskAdapter(
     private var taskList: MutableList<Task>,
     private val onTaskChecked: (Task) -> Unit,
-    private val onTaskClick: (Task) -> Unit
+    private val onTaskClick: (Task) -> Unit,
+    private val onTaskLongClick: (Task) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -85,6 +86,14 @@ class TaskAdapter(
         holder.itemView.setOnClickListener {
             onTaskClick(task)
         }
+        
+        holder.itemView.setOnLongClickListener {
+
+    onTaskLongClick(task)
+
+    true
+}
+        
     }
 
     override fun getItemCount(): Int {

@@ -35,35 +35,68 @@ class MainActivity : AppCompatActivity(),
         repository = TaskRepository(this)
 
         adapter = TaskAdapter(
-            taskList,
 
-            onTaskChecked = { task ->
+    taskList,
 
-                val result = repository.updateTask(task)
+    onTaskChecked = { task ->
 
-                if (result <= 0) {
-                    Toast.makeText(
-                        this,
-                        "Failed to update task",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            },
+        val result = repository.updateTask(task)
 
-            onTaskClick = { task ->
+        if (result <= 0) {
+            Toast.makeText(
+                this,
+                "Failed to update task",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    },
 
-    val bottomSheet = AddTaskBottomSheet()
+    onTaskClick = { task ->
 
-    bottomSheet.setOnTaskSavedListener(this)
+        val bottomSheet = AddTaskBottomSheet()
 
-    bottomSheet.setEditTask(task)
+        bottomSheet.setOnTaskSavedListener(this)
 
-    bottomSheet.show(
-        supportFragmentManager,
-        "EditTaskBottomSheet"
-    )
-}
+        bottomSheet.setEditTask(task)
+
+        bottomSheet.show(
+            supportFragmentManager,
+            "EditTaskBottomSheet"
         )
+    },
+
+    onTaskLongClick = { task ->
+
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Delete Task")
+            .setMessage("Are you sure you want to delete this task?")
+            .setPositiveButton("Delete") { _, _ ->
+
+    val result = repository.deleteTask(task.id)
+
+    if (result > 0) {
+
+        Toast.makeText(
+            this,
+            "Task deleted successfully",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        loadTasks()
+
+    } else {
+
+        Toast.makeText(
+            this,
+            "Failed to delete task",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+}
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+)
 
         rvTasks.layoutManager = LinearLayoutManager(this)
         rvTasks.adapter = adapter
