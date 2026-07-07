@@ -1,8 +1,11 @@
 package com.codewithck.taskmint
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -11,6 +14,7 @@ import com.codewithck.taskmint.bottomsheet.AddTaskBottomSheet
 import com.codewithck.taskmint.model.Task
 import com.codewithck.taskmint.repository.TaskRepository
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputEditText
 
 class MainActivity : AppCompatActivity(),
     AddTaskBottomSheet.OnTaskSavedListener {
@@ -18,6 +22,7 @@ class MainActivity : AppCompatActivity(),
     private lateinit var rvTasks: RecyclerView
     private lateinit var emptyLayout: View
     private lateinit var fabAdd: FloatingActionButton
+    private lateinit var etSearch: TextInputEditText
 
     private lateinit var adapter: TaskAdapter
     private lateinit var repository: TaskRepository
@@ -31,77 +36,100 @@ class MainActivity : AppCompatActivity(),
         rvTasks = findViewById(R.id.rvTasks)
         emptyLayout = findViewById(R.id.emptyLayout)
         fabAdd = findViewById(R.id.fabAdd)
+        etSearch = findViewById(R.id.etSearch)
 
         repository = TaskRepository(this)
 
         adapter = TaskAdapter(
 
-    taskList,
+            taskList,
 
-    onTaskChecked = { task ->
+            onTaskChecked = { task ->
 
-        val result = repository.updateTask(task)
+                val result = repository.updateTask(task)
 
-        if (result <= 0) {
-            Toast.makeText(
-                this,
-                "Failed to update task",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    },
+                if (result <= 0) {
+                    Toast.makeText(
+                        this,
+                        "Failed to update task",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            },
 
-    onTaskClick = { task ->
+            onTaskClick = { task ->
 
-        val bottomSheet = AddTaskBottomSheet()
+                val bottomSheet = AddTaskBottomSheet()
 
-        bottomSheet.setOnTaskSavedListener(this)
+                bottomSheet.setOnTaskSavedListener(this)
+                bottomSheet.setEditTask(task)
 
-        bottomSheet.setEditTask(task)
+                bottomSheet.show(
+                    supportFragmentManager,
+                    "EditTaskBottomSheet"
+                )
+            },
 
-        bottomSheet.show(
-            supportFragmentManager,
-            "EditTaskBottomSheet"
+            onTaskLongClick = { task ->
+
+                AlertDialog.Builder(this)
+                    .setTitle("Delete Task")
+                    .setMessage("Are you sure you want to delete this task?")
+                    .setPositiveButton("Delete") { _, _ ->
+
+                        val result = repository.deleteTask(task.id)
+
+                        if (result > 0) {
+
+                            Toast.makeText(
+                                this,
+                                "Task deleted successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            loadTasks()
+
+                        } else {
+
+                            Toast.makeText(
+                                this,
+                                "Failed to delete task",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
         )
-    },
-
-    onTaskLongClick = { task ->
-
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Delete Task")
-            .setMessage("Are you sure you want to delete this task?")
-            .setPositiveButton("Delete") { _, _ ->
-
-    val result = repository.deleteTask(task.id)
-
-    if (result > 0) {
-
-        Toast.makeText(
-            this,
-            "Task deleted successfully",
-            Toast.LENGTH_SHORT
-        ).show()
-
-        loadTasks()
-
-    } else {
-
-        Toast.makeText(
-            this,
-            "Failed to delete task",
-            Toast.LENGTH_SHORT
-        ).show()
-    }
-}
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-)
 
         rvTasks.layoutManager = LinearLayoutManager(this)
         rvTasks.adapter = adapter
 
         loadTasks()
+
+        etSearch.addTextChangedListener(object : TextWatcher {
+
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+            }
+
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+                filterTasks(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+        })
 
         fabAdd.setOnClickListener {
 
@@ -115,14 +143,49 @@ class MainActivity : AppCompatActivity(),
             )
         }
     }
-
-    private fun loadTasks() {
+    
+        private fun loadTasks() {
 
         taskList = repository.getAllTasks()
 
         adapter.updateList(taskList)
 
         if (taskList.isEmpty()) {
+            emptyLayout.visibility = View.VISIBLE
+            rvTasks.visibility = View.GONE
+        } else {
+            emptyLayout.visibility = View.GONE
+            rvTasks.visibility = View.VISIBLE
+        }
+    }
+
+    private fun filterTasks(query: String) {
+
+        if (query.isBlank()) {
+
+            adapter.updateList(taskList)
+
+            if (taskList.isEmpty()) {
+                emptyLayout.visibility = View.VISIBLE
+                rvTasks.visibility = View.GONE
+            } else {
+                emptyLayout.visibility = View.GONE
+                rvTasks.visibility = View.VISIBLE
+            }
+
+            return
+        }
+
+        val filteredList = taskList.filter {
+
+            it.title.contains(query, ignoreCase = true) ||
+            it.description.contains(query, ignoreCase = true)
+
+        }.toMutableList()
+
+        adapter.updateList(filteredList)
+
+        if (filteredList.isEmpty()) {
             emptyLayout.visibility = View.VISIBLE
             rvTasks.visibility = View.GONE
         } else {
