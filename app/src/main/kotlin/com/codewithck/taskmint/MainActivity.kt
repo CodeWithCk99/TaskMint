@@ -1,8 +1,8 @@
 package com.codewithck.taskmint
 
-import android.widget.Toast
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,21 +34,36 @@ class MainActivity : AppCompatActivity(),
 
         repository = TaskRepository(this)
 
-        adapter = TaskAdapter(taskList) { task ->
+        adapter = TaskAdapter(
+            taskList,
 
-    val result = repository.updateTask(task)
+            onTaskChecked = { task ->
 
-    if (result > 0) {
-        // Database updated successfully
-    } else {
-        Toast.makeText(
-            this,
-            "Failed to update task",
-            Toast.LENGTH_SHORT
-        ).show()
-    }
+                val result = repository.updateTask(task)
 
+                if (result <= 0) {
+                    Toast.makeText(
+                        this,
+                        "Failed to update task",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            },
+
+            onTaskClick = { task ->
+
+    val bottomSheet = AddTaskBottomSheet()
+
+    bottomSheet.setOnTaskSavedListener(this)
+
+    bottomSheet.setEditTask(task)
+
+    bottomSheet.show(
+        supportFragmentManager,
+        "EditTaskBottomSheet"
+    )
 }
+        )
 
         rvTasks.layoutManager = LinearLayoutManager(this)
         rvTasks.adapter = adapter
@@ -66,9 +81,9 @@ class MainActivity : AppCompatActivity(),
                 "AddTaskBottomSheet"
             )
         }
-        }
-    
-        private fun loadTasks() {
+    }
+
+    private fun loadTasks() {
 
         taskList = repository.getAllTasks()
 
@@ -86,4 +101,4 @@ class MainActivity : AppCompatActivity(),
     override fun onTaskSaved() {
         loadTasks()
     }
-}    
+}

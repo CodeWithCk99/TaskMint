@@ -31,6 +31,11 @@ class AddTaskBottomSheet : BottomSheetDialogFragment() {
     fun setOnTaskSavedListener(listener: OnTaskSavedListener) {
         this.listener = listener
     }
+    
+    fun setEditTask(task: Task) {
+    editTask = task
+    isEditMode = true
+}
 
     private lateinit var etTaskTitle: EditText
     private lateinit var etDescription: EditText
@@ -49,6 +54,9 @@ class AddTaskBottomSheet : BottomSheetDialogFragment() {
     private val calendar = Calendar.getInstance()
     private var selectedDueDate: Long = 0L
     private lateinit var repository: TaskRepository
+    
+    private var editTask: Task? = null
+private var isEditMode = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,6 +85,39 @@ class AddTaskBottomSheet : BottomSheetDialogFragment() {
         btnSaveTask = view.findViewById(R.id.btnSaveTask)
         repository = TaskRepository(requireContext())
 
+        if (isEditMode && editTask != null) {
+
+    etTaskTitle.setText(editTask!!.title)
+    etDescription.setText(editTask!!.description)
+
+    selectedDueDate = editTask!!.dueDate
+
+    if (selectedDueDate != 0L) {
+
+        calendar.timeInMillis = selectedDueDate
+
+        val formattedDate = SimpleDateFormat(
+            "dd MMM yyyy",
+            Locale.getDefault()
+        ).format(calendar.time)
+
+        btnDueDate.text = "📅 $formattedDate"
+    }
+
+    actCategory.setText(editTask!!.category, false)
+
+    when (editTask!!.priority) {
+
+        "Low" -> rbLow.isChecked = true
+
+        "High" -> rbHigh.isChecked = true
+
+        else -> rbMedium.isChecked = true
+    }
+
+    btnSaveTask.text = "Update Task"
+}
+        
         val categories = arrayOf(
             "Personal",
             "Work",
@@ -147,17 +188,35 @@ class AddTaskBottomSheet : BottomSheetDialogFragment() {
         actCategory.text.toString().trim()
     }
 
-    val task = Task(
+    val task = if (isEditMode) {
+
+    Task(
+        id = editTask!!.id,
+        title = title,
+        description = description,
+        priority = priority,
+        category = category,
+        dueDate = selectedDueDate,
+        isCompleted = editTask!!.isCompleted
+    )
+
+} else {
+
+    Task(
         title = title,
         description = description,
         priority = priority,
         category = category,
         dueDate = selectedDueDate
     )
-    
-        val result = repository.addTask(task)
+}
 
-    if (result > 0) {
+val success = if (isEditMode) {
+    repository.updateTask(task) > 0
+} else {
+    repository.addTask(task) > 0
+}
+    if (success) {
         Toast.makeText(
             requireContext(),
             "Task saved successfully",
@@ -168,10 +227,11 @@ class AddTaskBottomSheet : BottomSheetDialogFragment() {
         dismiss()
     } else {
         Toast.makeText(
-            requireContext(),
-            "Failed to save task",
-            Toast.LENGTH_SHORT
-        ).show()
+    requireContext(),
+    if (isEditMode) "Task updated successfully"
+    else "Task saved successfully",
+    Toast.LENGTH_SHORT
+).show()
     }
 }
 

@@ -1,19 +1,19 @@
 package com.codewithck.taskmint.adapter
 
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
-import android.graphics.Paint
-import android.graphics.Color
 import androidx.recyclerview.widget.RecyclerView
 import com.codewithck.taskmint.R
 import com.codewithck.taskmint.model.Task
 
 class TaskAdapter(
     private var taskList: MutableList<Task>,
-    private val onTaskChecked: (Task) -> Unit
+    private val onTaskChecked: (Task) -> Unit,
+    private val onTaskClick: (Task) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -52,37 +52,39 @@ class TaskAdapter(
         holder.txtTitle.text = task.title
         holder.txtDescription.text = task.description
         holder.txtPriority.text = task.priority
-        holder.checkCompleted.setOnCheckedChangeListener(null)
 
+        holder.checkCompleted.setOnCheckedChangeListener(null)
         holder.checkCompleted.isChecked = task.isCompleted
 
         holder.checkCompleted.setOnCheckedChangeListener { _, isChecked ->
+            task.isCompleted = isChecked
+            onTaskChecked(task)
+        }
 
-        task.isCompleted = isChecked
-
-    onTaskChecked(task)
-}
         if (task.isCompleted) {
 
-    holder.txtTitle.paintFlags =
-        holder.txtTitle.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            holder.txtTitle.paintFlags =
+                holder.txtTitle.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
 
-    holder.txtDescription.paintFlags =
-        holder.txtDescription.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            holder.txtDescription.paintFlags =
+                holder.txtDescription.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
 
-    holder.itemView.alpha = 0.55f
+            holder.itemView.alpha = 0.55f
 
-} else {
+        } else {
 
-    holder.txtTitle.paintFlags =
-        holder.txtTitle.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            holder.txtTitle.paintFlags =
+                holder.txtTitle.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
 
-    holder.txtDescription.paintFlags =
-        holder.txtDescription.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            holder.txtDescription.paintFlags =
+                holder.txtDescription.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
 
-    holder.itemView.alpha = 1f
-}
-        
+            holder.itemView.alpha = 1f
+        }
+
+        holder.itemView.setOnClickListener {
+            onTaskClick(task)
+        }
     }
 
     override fun getItemCount(): Int {
