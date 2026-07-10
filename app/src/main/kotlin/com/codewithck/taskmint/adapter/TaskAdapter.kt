@@ -54,14 +54,13 @@ class TaskAdapter(
         holder.txtDescription.text = task.description
         holder.txtPriority.text = task.priority
 
+        // Remove previous listener
         holder.checkCompleted.setOnCheckedChangeListener(null)
+
+        // Set checkbox state
         holder.checkCompleted.isChecked = task.isCompleted
 
-        holder.checkCompleted.setOnCheckedChangeListener { _, isChecked ->
-            task.isCompleted = isChecked
-            onTaskChecked(task)
-        }
-
+        // Apply completed style
         if (task.isCompleted) {
 
             holder.txtTitle.paintFlags =
@@ -83,17 +82,27 @@ class TaskAdapter(
             holder.itemView.alpha = 1f
         }
 
+        // Checkbox listener
+        holder.checkCompleted.setOnCheckedChangeListener { _, isChecked ->
+
+            task.isCompleted = isChecked
+
+            onTaskChecked(task)
+
+            val adapterPosition = holder.bindingAdapterPosition
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                notifyItemChanged(adapterPosition)
+            }
+        }
+
         holder.itemView.setOnClickListener {
             onTaskClick(task)
         }
-        
+
         holder.itemView.setOnLongClickListener {
-
-    onTaskLongClick(task)
-
-    true
-}
-        
+            onTaskLongClick(task)
+            true
+        }
     }
 
     override fun getItemCount(): Int {
