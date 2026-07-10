@@ -1,5 +1,6 @@
 package com.codewithck.taskmint.adapter
 
+import android.graphics.Color
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.codewithck.taskmint.R
 import com.codewithck.taskmint.model.Task
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class TaskAdapter(
     private var taskList: MutableList<Task>,
@@ -17,7 +21,8 @@ class TaskAdapter(
     private val onTaskLongClick: (Task) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
-    class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class TaskViewHolder(itemView: View) :
+        RecyclerView.ViewHolder(itemView) {
 
         val checkCompleted: CheckBox =
             itemView.findViewById(R.id.checkCompleted)
@@ -30,6 +35,12 @@ class TaskAdapter(
 
         val txtPriority: TextView =
             itemView.findViewById(R.id.txtPriority)
+
+        val txtCategory: TextView =
+            itemView.findViewById(R.id.txtCategory)
+
+        val txtDueDate: TextView =
+            itemView.findViewById(R.id.txtDueDate)
     }
 
     override fun onCreateViewHolder(
@@ -38,7 +49,11 @@ class TaskAdapter(
     ): TaskViewHolder {
 
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.task_item, parent, false)
+            .inflate(
+                R.layout.task_item,
+                parent,
+                false
+            )
 
         return TaskViewHolder(view)
     }
@@ -52,16 +67,47 @@ class TaskAdapter(
 
         holder.txtTitle.text = task.title
         holder.txtDescription.text = task.description
-        holder.txtPriority.text = task.priority
+        holder.txtCategory.text = "📂 ${task.category}"
 
-        // Remove previous listener
+        if (task.dueDate != 0L) {
+
+            val sdf = SimpleDateFormat(
+                "dd MMM yyyy",
+                Locale.getDefault()
+            )
+
+            holder.txtDueDate.text =
+                "📅 ${sdf.format(Date(task.dueDate))}"
+
+        } else {
+
+            holder.txtDueDate.text = "📅 No Date"
+
+        }
+
+        when (task.priority) {
+
+            "High" -> {
+                holder.txtPriority.text = "High"
+                holder.txtPriority.setBackgroundColor(Color.parseColor("#EF4444"))
+            }
+
+            "Medium" -> {
+                holder.txtPriority.text = "Medium"
+                holder.txtPriority.setBackgroundColor(Color.parseColor("#F59E0B"))
+            }
+
+            else -> {
+                holder.txtPriority.text = "Low"
+                holder.txtPriority.setBackgroundColor(Color.parseColor("#22C55E"))
+            }
+        }
+
         holder.checkCompleted.setOnCheckedChangeListener(null)
 
-        // Set checkbox state
         holder.checkCompleted.isChecked = task.isCompleted
-
-        // Apply completed style
-        if (task.isCompleted) {
+        
+               if (task.isCompleted) {
 
             holder.txtTitle.paintFlags =
                 holder.txtTitle.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
@@ -82,7 +128,6 @@ class TaskAdapter(
             holder.itemView.alpha = 1f
         }
 
-        // Checkbox listener
         holder.checkCompleted.setOnCheckedChangeListener { _, isChecked ->
 
             task.isCompleted = isChecked
@@ -90,6 +135,7 @@ class TaskAdapter(
             onTaskChecked(task)
 
             val adapterPosition = holder.bindingAdapterPosition
+
             if (adapterPosition != RecyclerView.NO_POSITION) {
                 notifyItemChanged(adapterPosition)
             }
