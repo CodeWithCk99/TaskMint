@@ -14,8 +14,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.codewithck.taskmint.adapter.TaskAdapter
 import com.codewithck.taskmint.bottomsheet.AddTaskBottomSheet
 import com.codewithck.taskmint.bottomsheet.FilterBottomSheet
+import com.codewithck.taskmint.bottomsheet.ThemeBottomSheet
 import com.codewithck.taskmint.model.Task
 import com.codewithck.taskmint.repository.TaskRepository
+import com.codewithck.taskmint.utils.ThemeManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 
@@ -24,11 +26,14 @@ class MainActivity : AppCompatActivity(),
 
     private lateinit var rvTasks: RecyclerView
     private lateinit var emptyLayout: View
-    private lateinit var fabAdd: FloatingActionButton
-    private lateinit var etSearch: TextInputEditText
-    private lateinit var btnFilter: ImageButton
 
-    // Dashboard TextViews
+    private lateinit var fabAdd: FloatingActionButton
+
+    private lateinit var etSearch: TextInputEditText
+
+    private lateinit var btnFilter: ImageButton
+    private lateinit var btnSettings: ImageButton
+
     private lateinit var tvTotalTasks: TextView
     private lateinit var tvPendingTasks: TextView
     private lateinit var tvCompletedTasks: TextView
@@ -39,6 +44,9 @@ class MainActivity : AppCompatActivity(),
     private var taskList = mutableListOf<Task>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        ThemeManager.applyTheme(this)
+
         super.onCreate(savedInstanceState)
 
         try {
@@ -60,9 +68,13 @@ class MainActivity : AppCompatActivity(),
 
         rvTasks = findViewById(R.id.rvTasks)
         emptyLayout = findViewById(R.id.emptyLayout)
+
         fabAdd = findViewById(R.id.fabAdd)
+
         etSearch = findViewById(R.id.etSearch)
+
         btnFilter = findViewById(R.id.btnFilter)
+        btnSettings = findViewById(R.id.btnSettings)
 
         tvTotalTasks = findViewById(R.id.tvTotalTasks)
         tvPendingTasks = findViewById(R.id.tvPendingTasks)
@@ -70,7 +82,7 @@ class MainActivity : AppCompatActivity(),
 
         repository = TaskRepository(this)
         
-               adapter = TaskAdapter(
+                adapter = TaskAdapter(
 
             taskList,
 
@@ -79,8 +91,11 @@ class MainActivity : AppCompatActivity(),
                 val result = repository.updateTask(task)
 
                 if (result > 0) {
+
                     loadTasks()
+
                 } else {
+
                     Toast.makeText(
                         this,
                         "Failed to update task",
@@ -113,11 +128,19 @@ class MainActivity : AppCompatActivity(),
 
                             Toast.makeText(
                                 this,
-                                "Task deleted",
+                                "Task deleted successfully",
                                 Toast.LENGTH_SHORT
                             ).show()
 
                             loadTasks()
+
+                        } else {
+
+                            Toast.makeText(
+                                this,
+                                "Failed to delete task",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                     .setNegativeButton("Cancel", null)
@@ -149,7 +172,9 @@ class MainActivity : AppCompatActivity(),
                 filterTasks(s.toString())
             }
 
-            override fun afterTextChanged(s: Editable?) {
+            override fun afterTextChanged(
+                s: Editable?
+            ) {
             }
         })
 
@@ -191,9 +216,17 @@ class MainActivity : AppCompatActivity(),
                 "FilterBottomSheet"
             )
         }
-    }
 
-    private fun loadTasks() {
+        btnSettings.setOnClickListener {
+
+            ThemeBottomSheet().show(
+                supportFragmentManager,
+                "ThemeBottomSheet"
+            )
+        }
+    }
+    
+        private fun loadTasks() {
 
         taskList = repository.getAllTasks()
 
@@ -213,26 +246,54 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    private fun updateDashboard() {
+
+        val total = taskList.size
+        val completed = taskList.count { it.isCompleted }
+        val pending = total - completed
+
+        tvTotalTasks.text = total.toString()
+        tvPendingTasks.text = pending.toString()
+        tvCompletedTasks.text = completed.toString()
+    }
+
     private fun filterTasks(query: String) {
 
         if (query.isBlank()) {
 
             adapter.updateList(taskList)
             updateDashboard()
+
+            if (taskList.isEmpty()) {
+                emptyLayout.visibility = View.VISIBLE
+                rvTasks.visibility = View.GONE
+            } else {
+                emptyLayout.visibility = View.GONE
+                rvTasks.visibility = View.VISIBLE
+            }
+
             return
         }
 
         val filteredList = taskList.filter {
 
-            it.title.contains(query, true) ||
-                    it.description.contains(query, true)
+            it.title.contains(query, ignoreCase = true) ||
+            it.description.contains(query, ignoreCase = true)
 
         }.toMutableList()
 
         adapter.updateList(filteredList)
+
+        if (filteredList.isEmpty()) {
+            emptyLayout.visibility = View.VISIBLE
+            rvTasks.visibility = View.GONE
+        } else {
+            emptyLayout.visibility = View.GONE
+            rvTasks.visibility = View.VISIBLE
+        }
     }
-    
-       private fun applyFilter(
+
+    private fun applyFilter(
         priority: String,
         status: String
     ) {
@@ -241,20 +302,16 @@ class MainActivity : AppCompatActivity(),
 
             val priorityMatch =
                 priority == "All" ||
-                        task.priority.equals(priority, ignoreCase = true)
+                task.priority.equals(priority, ignoreCase = true)
 
-            val statusMatch =
-                when (status) {
+            val statusMatch = when (status) {
 
-                    "Pending" ->
-                        !task.isCompleted
+                "Pending" -> !task.isCompleted
 
-                    "Completed" ->
-                        task.isCompleted
+                "Completed" -> task.isCompleted
 
-                    else ->
-                        true
-                }
+                else -> true
+            }
 
             priorityMatch && statusMatch
 
@@ -272,21 +329,6 @@ class MainActivity : AppCompatActivity(),
             emptyLayout.visibility = View.GONE
             rvTasks.visibility = View.VISIBLE
         }
-    }
-
-    private fun updateDashboard() {
-
-        val total = taskList.size
-
-        val completed =
-            taskList.count { it.isCompleted }
-
-        val pending =
-            total - completed
-
-        tvTotalTasks.text = total.toString()
-        tvPendingTasks.text = pending.toString()
-        tvCompletedTasks.text = completed.toString()
     }
 
     override fun onTaskSaved() {
