@@ -3,7 +3,7 @@ package com.codewithck.taskmint.database
 object DatabaseContract {
 
     const val DATABASE_NAME = "taskmint.db"
-    const val DATABASE_VERSION = 1
+    const val DATABASE_VERSION = 3
 
     object TaskTable {
         const val TABLE_NAME = "tasks"
@@ -14,6 +14,7 @@ object DatabaseContract {
         const val COLUMN_PRIORITY = "priority"
         const val COLUMN_CATEGORY = "category"
         const val COLUMN_DUE_DATE = "due_date"
+       const val COLUMN_REMINDER_TIME = "reminder_time"
         const val COLUMN_COMPLETED = "completed"
     }
 }

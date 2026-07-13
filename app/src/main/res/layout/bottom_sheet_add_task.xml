@@ -130,6 +130,35 @@
             android:layout_width="match_parent"
             android:layout_height="24dp"/>
 
+        <com.google.android.material.materialswitch.MaterialSwitch
+    android:id="@+id/switchReminder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:text="Enable Reminder"/>
+
+     <TextView
+    android:id="@+id/txtReminderDate"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:padding="12dp"
+    android:background="@android:drawable/editbox_background"
+    android:text="📅 Select Reminder Date"
+    android:textSize="16sp"
+    android:visibility="gone"/>
+
+    <TextView
+    android:id="@+id/txtReminderTime"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:padding="12dp"
+    android:background="@android:drawable/editbox_background"
+    android:text="🕒 Select Reminder Time"
+    android:textSize="16sp"
+    android:visibility="gone"/>
+
         <!-- Buttons -->
         <LinearLayout
             android:layout_width="match_parent"

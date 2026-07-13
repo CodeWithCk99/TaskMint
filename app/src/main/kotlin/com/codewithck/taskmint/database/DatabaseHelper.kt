@@ -21,6 +21,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
                 ${DatabaseContract.TaskTable.COLUMN_PRIORITY} TEXT,
                 ${DatabaseContract.TaskTable.COLUMN_CATEGORY} TEXT,
                 ${DatabaseContract.TaskTable.COLUMN_DUE_DATE} INTEGER,
+                ${DatabaseContract.TaskTable.COLUMN_REMINDER_TIME} INTEGER DEFAULT 0,
                 ${DatabaseContract.TaskTable.COLUMN_COMPLETED} INTEGER DEFAULT 0
             )
         """.trimIndent()

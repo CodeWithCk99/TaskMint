@@ -18,6 +18,7 @@ class DatabaseManager(context: Context) {
             put(DatabaseContract.TaskTable.COLUMN_PRIORITY, task.priority)
             put(DatabaseContract.TaskTable.COLUMN_CATEGORY, task.category)
             put(DatabaseContract.TaskTable.COLUMN_DUE_DATE, task.dueDate)
+            put(DatabaseContract.TaskTable.COLUMN_REMINDER_TIME, task.reminderTime)
             put(DatabaseContract.TaskTable.COLUMN_COMPLETED,
                 if (task.isCompleted) 1 else 0)
         }
@@ -63,6 +64,11 @@ class DatabaseManager(context: Context) {
                     category = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.TaskTable.COLUMN_CATEGORY))
                         ?: "Personal",
                     dueDate = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseContract.TaskTable.COLUMN_DUE_DATE)),
+                    reminderTime = cursor.getLong(
+    cursor.getColumnIndexOrThrow(
+        DatabaseContract.TaskTable.COLUMN_REMINDER_TIME
+    )
+),
                     isCompleted = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseContract.TaskTable.COLUMN_COMPLETED)) == 1
                 )
 
@@ -87,6 +93,7 @@ class DatabaseManager(context: Context) {
             put(DatabaseContract.TaskTable.COLUMN_PRIORITY, task.priority)
             put(DatabaseContract.TaskTable.COLUMN_CATEGORY, task.category)
             put(DatabaseContract.TaskTable.COLUMN_DUE_DATE, task.dueDate)
+            put(DatabaseContract.TaskTable.COLUMN_REMINDER_TIME, task.reminderTime)
             put(DatabaseContract.TaskTable.COLUMN_COMPLETED,
                 if (task.isCompleted) 1 else 0)
         }

@@ -16,6 +16,11 @@ import com.codewithck.taskmint.bottomsheet.AddTaskBottomSheet
 import com.codewithck.taskmint.bottomsheet.FilterBottomSheet
 import com.codewithck.taskmint.bottomsheet.ThemeBottomSheet
 import com.codewithck.taskmint.model.Task
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import android.os.Build
 import com.codewithck.taskmint.repository.TaskRepository
 import com.codewithck.taskmint.utils.ThemeManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -52,6 +57,8 @@ class MainActivity : AppCompatActivity(),
         try {
 
             setContentView(R.layout.activity_main)
+
+            requestNotificationPermission()
 
         } catch (e: Exception) {
 
@@ -333,7 +340,29 @@ class MainActivity : AppCompatActivity(),
 
     override fun onTaskSaved() {
 
-        loadTasks()
+    loadTasks()
+
+}
+
+private fun requestNotificationPermission() {
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                1001
+            )
+
+        }
 
     }
+
+}
 }

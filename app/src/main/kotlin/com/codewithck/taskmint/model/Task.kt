@@ -7,5 +7,6 @@ data class Task(
     val priority: String = "Medium",
     val category: String = "Personal",
     val dueDate: Long = 0L,
+    val reminderTime: Long = 0L,
     var isCompleted: Boolean = false
 )

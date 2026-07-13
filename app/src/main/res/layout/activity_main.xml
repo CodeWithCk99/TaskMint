@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="TaskMint"
-            android:textColor="@android:color/white"
+            android:textColor="#1E1E1E"
             android:textSize="30sp"
             android:textStyle="bold" />
 
